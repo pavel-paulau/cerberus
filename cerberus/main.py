@@ -1,4 +1,5 @@
 import time
+from argparse import ArgumentParser
 from multiprocessing import Process
 from random import shuffle
 
@@ -93,10 +94,16 @@ class Cerberus:
 
 
 def main():
-    c = Cerberus(hostname='172.23.97.50')
-    c.init_clients(num_pullers=400, num_pushers=600)
+    parser = ArgumentParser(prog='cerberus')
+    parser.add_argument('--pullers', dest='pullers', type=int, required=True)
+    parser.add_argument('--pushers', dest='pushers', type=int, required=True)
+    parser.add_argument('hostname', nargs=1)
+    args = parser.parse_args()
+
+    c = Cerberus(hostname=args.hostname[0])
+    c.init_clients(num_pullers=args.pullers, num_pushers=args.pushers)
     c()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

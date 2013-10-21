@@ -17,4 +17,12 @@ Installation
 Usage
 -----
 
-    cerberus
+    cerberus [-h] --pullers PULLERS --pushers PUSHERS hostname
+
+For instance:
+
+    cerberus --pullers=60 --pushers=40 172.23.97.50
+
+While developing:
+
+    python -m cerberus.main --pullers=60 --pushers=40 172.23.97.50
