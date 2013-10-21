@@ -4,25 +4,20 @@ cerberus
 [Sync Gateway](http://docs.couchbase.com/sync-gateway/) workload generator (prototype).
 
 
-Prerequisites
--------------
+Requirements
+------------
 
 * Python 3.3
 
-Installation
-------------
+Third-party packages:
 
-    pip install cerberus
+    pip install -r requirements.txt
 
 Usage
 -----
 
-    cerberus [-h] --pullers PULLERS --pushers PUSHERS hostname
+    python -m cerberus [-h] --pullers PULLERS --pushers PUSHERS hostname
 
 For instance:
 
-    cerberus --pullers=60 --pushers=40 172.23.97.50
-
-While developing:
-
-    python -m cerberus.main --pullers=60 --pushers=40 172.23.97.50
+    python -m cerberus --pullers=60 --pushers=40 172.23.97.50

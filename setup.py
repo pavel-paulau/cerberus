@@ -11,7 +11,7 @@ setup(
     author_email='pavel.paulau@gmail.com',
     packages=['cerberus'],
     entry_points={
-        'console_scripts': ['cerberus = cerberus.main:main']
+        'console_scripts': ['cerberus = cerberus:main']
     },
     install_requires=[
         'logger',
