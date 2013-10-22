@@ -1,15 +1,7 @@
-cerberus
-========
-
-[Sync Gateway](http://docs.couchbase.com/sync-gateway/) workload generator (prototype).
-
-
 Requirements
 ------------
 
-* Python 3.3
-
-Third-party packages:
+Python 3.3 is required for the project. Use `easy_install` or `pip` for third-party packages:
 
     pip install -r requirements.txt
 
