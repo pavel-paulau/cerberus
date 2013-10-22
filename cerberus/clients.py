@@ -2,7 +2,7 @@ import time
 from random import uniform
 from uuid import uuid4
 
-from logger.logger import logger
+from logger import logger
 
 from cerberus.rest import SyncGatewayClient
 
