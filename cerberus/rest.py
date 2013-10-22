@@ -53,5 +53,5 @@ class AdminClient(RestClient):
 
     def add_user(self, name, password, channels):
         url = '{}/_user/{}'.format(self.base_url, name)
-        data = {'name': name, 'password': password, 'channels': channels}
+        data = {'name': name, 'password': password, 'admin_channels': channels}
         return self.put(url=url, data=data)
