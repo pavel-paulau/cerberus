@@ -28,18 +28,16 @@ class DocIterator:
 
 class Pusher(SyncGatewayClient):
 
-    DELAY = 5
-
     def __init__(self, *args, **kwargs):
         super(Pusher, self).__init__(*args, **kwargs)
         logger.info('Initialized new Pusher')
 
-    def __call__(self, channel, starts_at, ends_at):
+    def __call__(self, channel, sleep_interval, starts_at, ends_at):
         logger.info('Started new Pusher')
         for docid, doc in DocIterator(channel=channel,
                                       starts_at=starts_at, ends_at=ends_at):
             self.put_single_doc(docid=docid, doc=doc)
-            time.sleep(uniform(self.DELAY * 0.75, self.DELAY * 1.25))
+            time.sleep(uniform(sleep_interval * 0.75, sleep_interval * 1.25))
 
 
 class Puller(SyncGatewayClient):

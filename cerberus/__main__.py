@@ -45,12 +45,13 @@ class Users(Iterator):
 
 class Cerberus:
 
-    RAMPUP_INTERVAL = 4
     DOCS_PER_PUSHER = 10 ** 6
 
-    def __init__(self, hostname):
+    def __init__(self, hostname, rampup_interval, sleep_interval):
         self.clients = []
         self.hostname = hostname
+        self.rampup_interval = rampup_interval
+        self.sleep_interval = sleep_interval
 
     def get_puller(self, name, password):
         puller = Puller(hostname=self.hostname, name=name, password=password)
@@ -60,6 +61,7 @@ class Cerberus:
         pusher = Pusher(self.hostname, name=name, password=password)
         return Process(target=pusher,
                        args=(channel,
+                             self.sleep_interval,
                              seqid * self.DOCS_PER_PUSHER,
                              (seqid + 1) * self.DOCS_PER_PUSHER
                              )
@@ -87,7 +89,7 @@ class Cerberus:
     def __call__(self):
         for client in self.clients:
             client.start()
-            time.sleep(self.RAMPUP_INTERVAL)
+            time.sleep(self.rampup_interval)
 
         for client in self.clients:
             client.join()
@@ -95,12 +97,16 @@ class Cerberus:
 
 def main():
     parser = ArgumentParser(prog='cerberus')
-    parser.add_argument('--pullers', dest='pullers', type=int, required=True)
-    parser.add_argument('--pushers', dest='pushers', type=int, required=True)
+    parser.add_argument('--pullers', type=int, required=True)
+    parser.add_argument('--pushers', type=int, required=True)
+    parser.add_argument('--rampup', type=float, default=4)
+    parser.add_argument('--sleep', type=float, default=5)
     parser.add_argument('hostname', nargs=1)
     args = parser.parse_args()
 
-    c = Cerberus(hostname=args.hostname[0])
+    c = Cerberus(hostname=args.hostname[0],
+                 rampup_interval=args.rampup,
+                 sleep_interval=args.sleep)
     c.init_clients(num_pullers=args.pullers, num_pushers=args.pushers)
     c()
 

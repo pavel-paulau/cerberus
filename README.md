@@ -8,7 +8,9 @@ Python 3.3 is required for the project. Use `easy_install` or `pip` for third-pa
 Usage
 -----
 
-    python -m cerberus [-h] --pullers PULLERS --pushers PUSHERS hostname
+    python -m cerberus [-h] [--rampup RAMPUP] [--sleep SLEEP]
+                       --pullers PULLERS --pushers PUSHERS
+                       hostname
 
 For instance:
 
