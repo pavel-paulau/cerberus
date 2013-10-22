@@ -1,2 +1,3 @@
 logger
 requests==2.0.0
+ujson

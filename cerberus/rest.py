@@ -1,4 +1,4 @@
-import json
+import ujson as json
 
 import requests
 
@@ -42,7 +42,7 @@ class SyncGatewayClient(RestClient):
     def get_changes_feed(self, since=None):
         url = '{}/_changes?limit=10&feed=longpoll&since={}'.format(
             self.base_url, since)
-        return self.session.get(url=url).json()
+        return json.loads(self.get(url=url))
 
 
 class AdminClient(RestClient):
