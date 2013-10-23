@@ -3,6 +3,8 @@ from argparse import ArgumentParser
 from multiprocessing import Process
 from random import shuffle
 
+from logger import logger
+
 from cerberus.clients import Puller, Pusher
 from cerberus.rest import AdminClient
 
@@ -40,6 +42,9 @@ class Users(Iterator):
     def next(self, seqid, channel):
         name = 'user-{}'.format(seqid)
         password = 'password'
+
+        logger.info('Creating new user {}, auth by {}'.format(name, self.auth))
+
         self.admin.add_user(name=name, password=password, channels=[channel])
         if self.auth == 'cookie':
             cookies = self.admin.create_session(name=name)
@@ -93,7 +98,8 @@ class Cerberus:
             self.clients.append(process)
 
     def __call__(self):
-        for client in self.clients:
+        for i, client in enumerate(self.clients):
+            logger.info('Starting new client: {}'.format(i))
             client.start()
             time.sleep(self.rampup_delay)
 
