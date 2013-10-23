@@ -52,10 +52,10 @@ class Cerberus:
 
     DOCS_PER_PUSHER = 10 ** 6
 
-    def __init__(self, hostname, rampup_interval, sleep_interval):
+    def __init__(self, hostname, rampup_delay, sleep_interval):
         self.clients = []
         self.hostname = hostname
-        self.rampup_interval = rampup_interval
+        self.rampup_delay = rampup_delay
         self.sleep_interval = sleep_interval
 
     def get_puller(self, **auth):
@@ -95,7 +95,7 @@ class Cerberus:
     def __call__(self):
         for client in self.clients:
             client.start()
-            time.sleep(self.rampup_interval)
+            time.sleep(self.rampup_delay)
 
         for client in self.clients:
             client.join()
@@ -105,15 +105,16 @@ def main():
     parser = ArgumentParser(prog='cerberus')
     parser.add_argument('--pullers', type=int, required=True)
     parser.add_argument('--pushers', type=int, required=True)
-    parser.add_argument('--rampup', type=float, default=4)
-    parser.add_argument('--sleep', type=float, default=5)
+    parser.add_argument('--rampup', type=float, default=3600)
+    parser.add_argument('--sleep', type=float, default=10)
     parser.add_argument('--auth', type=str, choices=('cookie', 'header'))
     parser.add_argument('hostname', nargs=1)
     args = parser.parse_args()
 
+    rampup_delay = args.rampup / (args.pullers + args.pushers)
+
     c = Cerberus(hostname=args.hostname[0],
-                 rampup_interval=args.rampup,
-                 sleep_interval=args.sleep)
+                 rampup_delay=rampup_delay, sleep_interval=args.sleep)
     c.init_clients(num_pullers=args.pullers, num_pushers=args.pushers,
                    auth=args.auth)
     c()

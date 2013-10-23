@@ -37,7 +37,7 @@ class Pusher(SyncGatewayClient):
         for docid, doc in DocIterator(channel=channel,
                                       starts_at=starts_at, ends_at=ends_at):
             self.put_single_doc(docid=docid, doc=doc)
-            time.sleep(uniform(sleep_interval * 0.75, sleep_interval * 1.25))
+            time.sleep(uniform(sleep_interval * 0.8, sleep_interval * 1.2))
 
 
 class Puller(SyncGatewayClient):
