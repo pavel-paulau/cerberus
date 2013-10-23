@@ -5,17 +5,19 @@ import requests
 
 class RestClient:
 
-    def __init__(self, name=None, password=None):
+    def __init__(self, name=None, password=None, cookies=None):
         self.session = requests.Session()
         if name and password:
             self.session.auth = (name, password)
+        if cookies:
+            self.session.cookies.update(cookies)
         self.session.headers.update({'Content-type': 'application/json'})
 
     def post(self, url, data):
-        return self.session.post(url=url, data=json.dumps(data)).content
+        return self.session.post(url=url, data=json.dumps(data)).content.decode('UTF-8')
 
     def put(self, url, data):
-        return self.session.put(url=url, data=json.dumps(data)).content
+        return self.session.put(url=url, data=json.dumps(data)).content.decode('UTF-8')
 
     def get(self, url):
         return self.session.get(url=url).content.decode('UTF-8')
@@ -23,8 +25,9 @@ class RestClient:
 
 class SyncGatewayClient(RestClient):
 
-    def __init__(self, hostname, name, password, db='sync_gateway'):
-        super(SyncGatewayClient, self).__init__(name, password)
+    def __init__(self, hostname, name=None, password=None, cookies=None,
+                 db='sync_gateway'):
+        super(SyncGatewayClient, self).__init__(name, password, cookies)
         self.base_url = 'http://{}:4984/{}'.format(hostname, db)
 
     def put_single_doc(self, docid, doc):
@@ -55,3 +58,9 @@ class AdminClient(RestClient):
         url = '{}/_user/{}'.format(self.base_url, name)
         data = {'name': name, 'password': password, 'admin_channels': channels}
         return self.put(url=url, data=data)
+
+    def create_session(self, name):
+        url = '{}/_session'.format(self.base_url, name)
+        data = {'name': name, 'ttl': 2000}
+        cookie = json.loads(self.post(url=url, data=data))
+        return {cookie['cookie_name']: cookie['session_id']}
