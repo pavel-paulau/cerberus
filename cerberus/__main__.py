@@ -5,7 +5,7 @@ from random import shuffle
 
 from logger import logger
 
-from cerberus.clients import Puller, Pusher
+from cerberus.clients import Puller, BulkPuller, Pusher
 from cerberus.rest import AdminClient
 
 
@@ -67,6 +67,10 @@ class Cerberus:
         puller = Puller(hostname=self.hostname, **auth)
         return Process(target=puller)
 
+    def get_bulk_puller(self, **auth):
+        puller = BulkPuller(hostname=self.hostname, **auth)
+        return Process(target=puller)
+
     def get_pusher(self, channel, seqid, **auth):
         pusher = Pusher(self.hostname, **auth)
         return Process(target=pusher,
@@ -77,19 +81,23 @@ class Cerberus:
                              )
                        )
 
-    def init_clients(self, num_pullers, num_pushers, auth):
+    def init_clients(self, num_pullers, num_bulk_pullers, num_pushers, auth):
         client_id = 0
         pusher_id = 0
         channels = Channels()
         users = Users(self.hostname, auth)
 
-        clients = ['puller'] * num_pullers + ['pusher'] * num_pushers
+        clients = ['puller'] * num_pullers + \
+                  ['bulk_puller'] * num_bulk_pullers + \
+                  ['pusher'] * num_pushers
         shuffle(clients)
 
         for client in clients:
             channel = channels.next()
             if client == 'puller':
                 process = self.get_puller(**users.next(client_id, channel))
+            elif client == 'bulk_puller':
+                process = self.get_bulk_puller(**users.next(client_id, channel))
             else:
                 process = self.get_pusher(channel, pusher_id,
                                           **users.next(client_id, channel))
@@ -110,6 +118,7 @@ class Cerberus:
 def main():
     parser = ArgumentParser(prog='cerberus')
     parser.add_argument('--pullers', type=int, required=True)
+    parser.add_argument('--bulkpullers', type=int, required=True)
     parser.add_argument('--pushers', type=int, required=True)
     parser.add_argument('--rampup', type=float, default=3600)
     parser.add_argument('--sleep', type=float, default=10)
@@ -117,11 +126,13 @@ def main():
     parser.add_argument('hostname', nargs=1)
     args = parser.parse_args()
 
-    rampup_delay = args.rampup / (args.pullers + args.pushers)
+    rampup_delay = args.rampup / (args.pullers + args.bulkpullers + args.pushers)
 
     c = Cerberus(hostname=args.hostname[0],
                  rampup_delay=rampup_delay, sleep_interval=args.sleep)
-    c.init_clients(num_pullers=args.pullers, num_pushers=args.pushers,
+    c.init_clients(num_pullers=args.pullers,
+                   num_bulk_pullers=args.bulkpullers,
+                   num_pushers=args.pushers,
                    auth=args.auth)
     c()
 
