@@ -39,6 +39,6 @@ class Puller(SyncGatewayClient):
         self.last_seq = '*:{}'.format(self.get_last_seq())
         while True:
             feed = self.get_changes_feed(since=self.last_seq)
-            for result in feed['results']:
-                self.get_single_doc(result['id'])
+            docs = {'docs': [{'id': r['id']} for r in feed['results']]}
+            self.get_bulk_docs(docs)
             self.last_seq = feed['last_seq']

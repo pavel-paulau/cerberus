@@ -34,6 +34,10 @@ class SyncGatewayClient(RestClient):
         url = '{}/{}?new_edits=true'.format(self.base_url, docid)
         return self.put(url=url, data=doc)
 
+    def get_bulk_docs(self, docs):
+        url = '{}/_bulk_get'.format(self.base_url)
+        return self.post(url=url, data=docs)
+
     def get_single_doc(self, docid):
         url = '{}/{}'.format(self.base_url, docid)
         return self.get(url=url)
