@@ -2,8 +2,6 @@ import time
 from random import uniform
 from uuid import uuid4
 
-from logger import logger
-
 from cerberus.rest import SyncGatewayClient
 
 
@@ -44,7 +42,6 @@ class Puller(SyncGatewayClient):
             self.last_seq = feed['last_seq']
 
             docs = [result['id'] for result in feed['results']]
-            logger.info('Fetching {} docs'.format(len(docs)))
             for doc in docs:
                 self.get_single_doc(docid=doc)
 
@@ -58,5 +55,4 @@ class BulkPuller(SyncGatewayClient):
             self.last_seq = feed['last_seq']
 
             docs = [{'id': result['id']} for result in feed['results']]
-            logger.info('Fetching {} docs'.format(len(docs)))
             self.get_bulk_docs({'docs': docs})
