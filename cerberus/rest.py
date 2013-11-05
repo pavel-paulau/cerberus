@@ -47,7 +47,7 @@ class SyncGatewayClient(RestClient):
         return json.loads(r)['committed_update_seq']
 
     def get_changes_feed(self, since=None):
-        url = '{}/_changes?limit=10&feed=longpoll&since={}'.format(
+        url = '{}/_changes?limit=10&feed=longpoll&timeout=0&since={}'.format(
             self.base_url, since)
         return json.loads(self.get(url=url))
 
