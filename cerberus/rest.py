@@ -64,7 +64,7 @@ class AdminClient(RestClient):
         return self.put(url=url, data=data)
 
     def create_session(self, name):
-        url = '{}/_session'.format(self.base_url, name)
+        url = '{}/_session'.format(self.base_url)
         data = {'name': name, 'ttl': 36000}
         cookie = json.loads(self.post(url=url, data=data))
         return {cookie['cookie_name']: cookie['session_id']}
